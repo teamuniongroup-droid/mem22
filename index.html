@@ -60,23 +60,23 @@
   },true);
   window.addEventListener("vturbRealPlay",function(){realPlay=true});
 
-  // Detect unmuted autoplay (in-app browsers like Facebook/Instagram)
-  function checkUnmutedPlay(){
+  // Detect autoplay (in-app browsers like Facebook/Instagram - may be muted)
+  function checkAutoPlay(){
     if(realPlay)return;
     try{
       var vids=document.querySelectorAll("video");
       for(var v=0;v<vids.length;v++){
-        if(vids[v].currentTime>0.5&&!vids[v].muted&&vids[v].volume>0&&vids[v].duration>10){
+        if(vids[v].currentTime>3&&vids[v].duration>10){
           realPlay=true;return;
         }
       }
       var i=window.smartplayer&&window.smartplayer.instances&&window.smartplayer.instances[0];
-      if(i&&i.video&&i.video.currentTime>0.5&&!i.video.muted&&i.video.volume>0){
+      if(i&&i.video&&i.video.currentTime>3&&i.video.duration>10){
         realPlay=true;
       }
     }catch(e){}
   }
-  setInterval(checkUnmutedPlay,1500);
+  setInterval(checkAutoPlay,1500);
 
   function trackVideo(){
     if(!realPlay||!sessionId)return;
@@ -110,7 +110,6 @@
   });
 })();
 </script>
-
     
 
 
