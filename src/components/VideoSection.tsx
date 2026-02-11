@@ -30,7 +30,7 @@ const VideoSection = () => {
     const setupPlayer = () => {
       const player = document.querySelector("vturb-smartplayer");
       if (player) {
-        const delaySeconds = 2860;
+        const delaySeconds = 2870;
         
         player.addEventListener("player:ready", function() {
           // Display hidden elements after delay (synced with video time)
