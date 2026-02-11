@@ -1,0 +1,186 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Open+Sans:wght@400;500;600;700&display=swap');
+
+@layer base {
+  :root {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 100%;
+
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 357 92% 40%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 0 0% 20%;
+    --muted-foreground: 0 0% 70%;
+
+    --accent: 357 92% 40%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 357 92% 40%;
+
+    --radius: 0rem;
+
+    /* CBS Custom */
+    --cbs-red: 357 92% 40%;
+    --cbs-dark-red: 357 92% 32%;
+    --cbs-black: 0 0% 0%;
+    --cbs-dark: 0 0% 8%;
+    --cbs-gray: 0 0% 50%;
+    --cbs-light-gray: 0 0% 70%;
+
+    /* Success/CTA colors */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+  }
+
+  .dark {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 357 92% 40%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 20%;
+    --muted-foreground: 0 0% 70%;
+    --accent: 357 92% 40%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 357 92% 40%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
+
+@layer components {
+  .cbs-header {
+    @apply bg-primary;
+  }
+
+  .cbs-nav-link {
+    @apply text-white text-sm font-medium hover:opacity-80 transition-opacity flex items-center gap-1;
+  }
+
+  .cbs-hero {
+    @apply bg-primary relative overflow-hidden;
+  }
+
+  .cbs-section-title {
+    @apply font-display text-xl font-bold uppercase tracking-wide;
+  }
+
+  .cbs-article-card {
+    @apply cursor-pointer;
+  }
+
+  .cbs-article-image {
+    @apply w-full aspect-video object-cover transition-transform duration-300 group-hover:scale-105;
+  }
+
+  .cbs-article-title {
+    @apply font-display font-bold text-lg leading-tight mt-3 group-hover:text-primary transition-colors;
+  }
+
+  .cbs-article-excerpt {
+    @apply text-muted-foreground text-sm mt-2 line-clamp-3;
+  }
+
+  .cbs-article-date {
+    @apply text-muted-foreground text-xs mt-2 uppercase tracking-wider;
+  }
+
+  .cbs-tab {
+    @apply text-white/80 hover:text-white transition-colors font-medium text-sm py-2 border-b-2 border-transparent;
+  }
+
+  .cbs-tab-active {
+    @apply text-white border-white;
+  }
+
+  .cbs-play-button {
+    @apply absolute inset-0 flex items-center justify-center;
+  }
+
+  .cbs-play-icon {
+    @apply w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-colors;
+  }
+
+  .cbs-video-overlay {
+    @apply absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent;
+  }
+
+  .cbs-video-title {
+    @apply absolute bottom-6 left-6 right-6 text-white font-display text-2xl font-bold;
+  }
+}
+
+/* Pulsing shadow for CTA buttons */
+@keyframes pulse-shadow-green {
+  0%, 100% {
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -2px 0 rgba(0,0,0,0.2), 0 0 6px rgba(0,191,99,0.3), 0 0 12px rgba(0,191,99,0.15);
+  }
+  50% {
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -2px 0 rgba(0,0,0,0.2), 0 0 10px rgba(0,191,99,0.4), 0 0 24px rgba(0,191,99,0.25);
+  }
+}
+
+@keyframes pulse-shadow-blue {
+  0%, 100% {
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -2px 0 rgba(0,0,0,0.2), 0 0 8px rgba(30,58,95,0.4), 0 0 20px rgba(30,58,95,0.2);
+  }
+  50% {
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -2px 0 rgba(0,0,0,0.2), 0 0 16px rgba(30,58,95,0.6), 0 0 40px rgba(30,58,95,0.35);
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground));
+}
