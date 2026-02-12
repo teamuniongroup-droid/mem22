@@ -62,7 +62,7 @@
   },true);
   window.addEventListener("vturbRealPlay",function(){realPlay=true});
 
-  // Method 2: Listen for native video events (catches ALL plays including autoplay)
+  // Method 2: Detect ANY video play (autoplay, in-app browsers, iframes)
   function attachVideoListeners(vid){
     if(vid._tracked)return;
     vid._tracked=true;
@@ -76,18 +76,55 @@
     });
   }
 
-  // Attach to existing and future video elements
+  // Scan for video elements (including inside iframes)
   function scanVideos(){
     var vids=document.querySelectorAll("video");
     for(var v=0;v<vids.length;v++)attachVideoListeners(vids[v]);
-    // Also check smartplayer
+    // Check smartplayer API
     try{
       var i=window.smartplayer&&window.smartplayer.instances&&window.smartplayer.instances[0];
       if(i&&i.video)attachVideoListeners(i.video);
     }catch(e){}
+    // Try to access videos inside iframes (same-origin only)
+    try{
+      var iframes=document.querySelectorAll("iframe");
+      for(var f=0;f<iframes.length;f++){
+        try{
+          var iDoc=iframes[f].contentDocument||iframes[f].contentWindow.document;
+          if(iDoc){
+            var iVids=iDoc.querySelectorAll("video");
+            for(var iv=0;iv<iVids.length;iv++)attachVideoListeners(iVids[iv]);
+          }
+        }catch(e){}
+      }
+    }catch(e){}
   }
   scanVideos();
   setInterval(scanVideos,2000);
+
+  // Method 3: Polling fallback - detect play via smartplayer API or any video currentTime
+  // This catches cases where video elements are in cross-origin iframes
+  function pollForPlay(){
+    if(realPlay)return;
+    // Check smartplayer API
+    try{
+      var i=window.smartplayer&&window.smartplayer.instances&&window.smartplayer.instances[0];
+      if(i&&i.video&&i.video.currentTime>2&&i.video.duration>10){realPlay=true;return}
+    }catch(e){}
+    // Check vturb custom element
+    try{
+      var p=document.querySelector("vturb-smartplayer");
+      if(p&&p.currentTime>2&&p.duration>10){realPlay=true;return}
+    }catch(e){}
+    // Check all visible videos
+    try{
+      var vids=document.querySelectorAll("video");
+      for(var v=0;v<vids.length;v++){
+        if(vids[v].currentTime>2&&vids[v].duration>10){realPlay=true;return}
+      }
+    }catch(e){}
+  }
+  setInterval(pollForPlay,1500);
 
   // MutationObserver to catch dynamically added videos
   try{
