@@ -14,6 +14,15 @@
   var lastVideoTime = -1;
   var lastScrollY = -1;
   var hasTrackedPlay = false;
+  var lastActivity = Date.now();
+  var isIdle = false;
+  var IDLE_TIMEOUT = 120000; // 2 minutes
+
+  // Track user activity
+  function markActive(){lastActivity=Date.now();if(isIdle){isIdle=false}}
+  ["mousemove","mousedown","touchstart","touchmove","keydown","scroll","click"].forEach(function(evt){
+    window.addEventListener(evt,markActive,{passive:true,capture:true})
+  });
 
   function post(body, cb){
     fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(Object.assign({site_id:SITE_ID,visitor_id:visitorId},body))})
@@ -30,8 +39,12 @@
     post({action:"session_start",user_agent:navigator.userAgent,referrer:document.referrer})
   }
 
-  // Heartbeat every 10s
-  setInterval(function(){if(sessionId)post({action:"heartbeat",session_id:sessionId})},10000);
+  // Heartbeat every 10s - but only if user is active
+  setInterval(function(){
+    if(!sessionId)return;
+    if(Date.now()-lastActivity>IDLE_TIMEOUT){isIdle=true;return}
+    post({action:"heartbeat",session_id:sessionId})
+  },10000);
 
   // Scroll tracking (page percentage)
   var scrollTimer=null;
@@ -138,6 +151,7 @@
     if(ct<=0)try{var p=document.querySelector("vturb-smartplayer");if(p){ct=p.currentTime||0;dur=p.duration||0}}catch(e){}
     if(ct<=0)try{var vids=document.querySelectorAll("video");for(var v=0;v<vids.length;v++){if(vids[v].currentTime>0&&vids[v].duration>10){ct=vids[v].currentTime;dur=vids[v].duration;break}}}catch(e){}
     if(ct<=0)return;
+    markActive(); // video is playing = user is active
 
     if(!hasTrackedPlay){
       hasTrackedPlay=true;
