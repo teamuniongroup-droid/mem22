@@ -49,8 +49,10 @@
     },2000)
   });
 
-  // Video tracking - detect real play (click OR unmuted autoplay from in-app browsers)
+  // Video tracking - detect real play (click, autoplay, in-app browsers)
   var realPlay = false;
+
+  // Method 1: User click on player
   document.addEventListener("click",function(e){
     if(!e.isTrusted)return;
     var t=e.target;
@@ -60,23 +62,37 @@
   },true);
   window.addEventListener("vturbRealPlay",function(){realPlay=true});
 
-  // Detect autoplay (in-app browsers like Facebook/Instagram - may be muted)
-  function checkAutoPlay(){
-    if(realPlay)return;
+  // Method 2: Listen for native video events (catches ALL plays including autoplay)
+  function attachVideoListeners(vid){
+    if(vid._tracked)return;
+    vid._tracked=true;
+    var checkTime=function(){
+      if(realPlay)return;
+      if(vid.currentTime>2&&vid.duration>10){realPlay=true}
+    };
+    vid.addEventListener("timeupdate",checkTime);
+    vid.addEventListener("playing",function(){
+      setTimeout(checkTime,2500);
+    });
+  }
+
+  // Attach to existing and future video elements
+  function scanVideos(){
+    var vids=document.querySelectorAll("video");
+    for(var v=0;v<vids.length;v++)attachVideoListeners(vids[v]);
+    // Also check smartplayer
     try{
-      var vids=document.querySelectorAll("video");
-      for(var v=0;v<vids.length;v++){
-        if(vids[v].currentTime>3&&vids[v].duration>10){
-          realPlay=true;return;
-        }
-      }
       var i=window.smartplayer&&window.smartplayer.instances&&window.smartplayer.instances[0];
-      if(i&&i.video&&i.video.currentTime>3&&i.video.duration>10){
-        realPlay=true;
-      }
+      if(i&&i.video)attachVideoListeners(i.video);
     }catch(e){}
   }
-  setInterval(checkAutoPlay,1500);
+  scanVideos();
+  setInterval(scanVideos,2000);
+
+  // MutationObserver to catch dynamically added videos
+  try{
+    new MutationObserver(function(){scanVideos()}).observe(document.body||document.documentElement,{childList:true,subtree:true});
+  }catch(e){}
 
   function trackVideo(){
     if(!realPlay||!sessionId)return;
